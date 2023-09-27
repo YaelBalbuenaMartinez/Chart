@@ -1,17 +1,51 @@
 
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <title>Canvas con Bootstrap</title>
+</head>
+<body>
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-6 text-center">
+      <canvas id="chartEstatus" width="300" height="300"></canvas>
+    </div>
+
+    <div class="col-lg-6 text-center ">
+      <canvas id="chartGenero" width="300" height="300"></canvas>
+    </div>
+
+    <div class="col-lg-6 text-center">
+      <canvas id="chartNomInst" width="400" height="400"></canvas>
+    </div>
+
+    <div class="col-lg-6 text-center">
+      <canvas id="chartEstMedic" width="400" height="400"></canvas>
+    </div>
+
+    <div class="col-lg-12 text-center">
+      <canvas id="chartEdad" width="1000" height="400"></canvas>
+    </div>
+
+    
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
 
-<canvas id="chartEstatus" width="300" height="300"></canvas>
-
-<canvas id="chartNomInst" width="400" height="400"></canvas>
-
-<!-- <canvas id="chartMunicipio" width="400" height="400"></canvas> -->
-
-<canvas id="chartEstMedic" width="400" height="400"></canvas>
-
-<canvas id="chartEdad" width="800" height="400"></canvas>
-
-<canvas id="chartGenero" width="300" height="300"></canvas>
 
 <!-- script para el chart de vigencia de estatus -->
 <script>
@@ -57,7 +91,7 @@
 
 <!-- Chart para el nombre de la institucion  -->
 <script>
-    const nomIns = {!! json_encode($completas->pluck('nombre_institucion')->all()) !!};
+    const nomIns = {!! json_encode($completas->pluck('institucion_abrev')->all()) !!};
     const nomInsCounts = {};
 
     nomIns.forEach((nomIn) => {
@@ -206,7 +240,7 @@
                 datasets: [{
                     label: 'Cantidad de edades',
                     data: EdadesData,
-                    backgroundColor: ["#FF0000", "#00FF00", '#FF59E3', '#0000FF', '#FFA500', '#FFFF00', '#FF00FF', '#00FFFF', '#800080', '#008000', '#800000', '#808080', '#008080'],
+                    backgroundColor: ["#FF0000"],
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
                 }]
