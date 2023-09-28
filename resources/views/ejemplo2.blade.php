@@ -53,7 +53,8 @@
     </div>
 
     <div class="col-lg-6 text-center">
-        <select id="opciones3" name="opciones">
+    <label for="opciones">Seleciona cuales quieras graficar.</label>
+        <select id="opciones4" name="opciones">
             <?php $vistos = []; ?>
             @foreach($completas as $completa)
                 @if (!in_array($completa->estado_medico, $vistos))
@@ -62,10 +63,26 @@
                 @endif
             @endforeach
         </select>
+
+        <select id="opciones4" name="opciones">
+            <?php $vistos = []; ?>
+            @foreach($completas as $completa)
+                @if (!in_array($completa->estado_medico, $vistos))
+                    <option value="opcion1">{{ $completa->estado_medico }}</option>
+                <?php $vistos[] = $completa->estado_medico; ?>
+                @endif
+            @endforeach
+        </select>
+
+        <button class="btn btn-primary">Graficar</button>
       <canvas id="chartEstMedic" width="400" height="400"></canvas>
     </div>
 
     <div class="col-lg-12 text-center">
+        <h5>Coloca la edad que deseas graficar</h5>
+        <input type="number" min="0" max="80">
+        <input type="number" min="0" max="80">
+        <button class="btn btn-primary">Graficar</button>
       <canvas id="chartEdad" width="1000" height="400"></canvas>
     </div>
 
