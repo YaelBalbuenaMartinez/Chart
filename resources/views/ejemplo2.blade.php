@@ -24,10 +24,44 @@
     </div>
 
     <div class="col-lg-6 text-center">
+
+    <label for="opciones">Selecciona cuales quieras graficar:</label>
+
+    <select id="opciones1" name="opciones">
+        <?php $vistos = []; ?>
+        @foreach($completas as $completa)
+            @if (!in_array($completa->institucion_abrev, $vistos))
+                <option value="opcion1">{{ $completa->institucion_abrev }}</option>
+            <?php $vistos[] = $completa->institucion_abrev; ?>
+            @endif
+        @endforeach 
+    </select>
+
+    <select id="opciones2" name="opciones">
+        <?php $vistos = []; ?>
+        @foreach($completas as $completa)
+            @if (!in_array($completa->institucion_abrev, $vistos))
+                <option value="opcion1">{{ $completa->institucion_abrev }}</option>
+            <?php $vistos[] = $completa->institucion_abrev; ?>
+            @endif
+        @endforeach 
+    </select>
+
+    <button class="btn btn-primary" onclick="actualizarGrafica()">graficar</button>
+
       <canvas id="chartNomInst" width="400" height="400"></canvas>
     </div>
 
     <div class="col-lg-6 text-center">
+        <select id="opciones3" name="opciones">
+            <?php $vistos = []; ?>
+            @foreach($completas as $completa)
+                @if (!in_array($completa->estado_medico, $vistos))
+                    <option value="opcion1">{{ $completa->estado_medico }}</option>
+                <?php $vistos[] = $completa->estado_medico; ?>
+                @endif
+            @endforeach
+        </select>
       <canvas id="chartEstMedic" width="400" height="400"></canvas>
     </div>
 
@@ -91,6 +125,7 @@
 
 <!-- Chart para el nombre de la institucion  -->
 <script>
+   
     const nomIns = {!! json_encode($completas->pluck('institucion_abrev')->all()) !!};
     const nomInsCounts = {};
 
