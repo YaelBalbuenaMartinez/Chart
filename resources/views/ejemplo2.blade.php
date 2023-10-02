@@ -31,28 +31,19 @@
         <?php $vistos = []; ?>
         @foreach($completas as $completa)
             @if (!in_array($completa->institucion_abrev, $vistos))
-                <option value="opcion1">{{ $completa->institucion_abrev }}</option>
+                <option value="{{ $completa->institucion_abrev }}">{{ $completa->institucion_abrev }}</option>
             <?php $vistos[] = $completa->institucion_abrev; ?>
             @endif
         @endforeach 
     </select>
 
-    <select id="opciones2" name="opciones">
-        <?php $vistos = []; ?>
-        @foreach($completas as $completa)
-            @if (!in_array($completa->institucion_abrev, $vistos))
-                <option value="opcion1">{{ $completa->institucion_abrev }}</option>
-            <?php $vistos[] = $completa->institucion_abrev; ?>
-            @endif
-        @endforeach 
-    </select>
-
-    <button class="btn btn-primary" onclick="actualizarGrafica()">graficar</button>
+    <button class="btn btn-primary" onclick="agregar()">graficar</button>
 
       <canvas id="chartNomInst" width="400" height="400"></canvas>
     </div>
 
     <div class="col-lg-6 text-center">
+        <hr>
     <label for="opciones">Selecciona cuáles quieras graficar.</label>
     <select id="opciones4" name="opciones">
         <?php $vistos = []; ?>
@@ -66,6 +57,7 @@
 
         <button class="btn btn-primary" onclick="actualizarGrafico()">Graficar</button>
         <canvas id="chartEstMedic" width="400" height="400"></canvas>
+        <hr>
     </div>
     <div class="col-lg-12 text-center">
         <h5>Coloca la edad que deseas graficar</h5>
@@ -131,90 +123,69 @@
 
 <!-- Chart para el nombre de la institucion  -->
 <script>
-   
-    const nomIns = {!! json_encode($completas->pluck('institucion_abrev')->all()) !!};
-    const nomInsCounts = {};
+    let chartnomIn;
 
-    nomIns.forEach((nomIn) => {
-    if (nomInsCounts[nomIn]) {
-        nomInsCounts[nomIn]++;
-    } else {
-        nomInsCounts[nomIn] = 1;
-    }
-});
+    function agregar() {
+        const seleccionado = document.getElementById('opciones1').value;
 
+        const filtroData = {!! json_encode($completas->pluck('institucion_abrev')->all()) !!}.filter(item => item === seleccionado);
 
-    const nomInsLabels = Object.keys(nomInsCounts);
-    const nomInsData = nomInsLabels.map((label) => nomInsCounts[label]);
+        const nomInsCounts = {};
+        filtroData.forEach((Instituciones) => {
+            nomInsCounts[Instituciones] = (nomInsCounts[Instituciones] || 0) + 1;
+        });
 
-    const ctxnomIns = document.getElementById('chartNomInst').getContext('2d');
-        const chartnomIns = new Chart(ctxnomIns, {
-            type: 'bar',
-            data: {
-                labels: nomInsLabels,
-                datasets: [{
-                    label: 'Cantidad de nombres de institucion',
-                    data: nomInsData,
-                    backgroundColor: ["#FF0000", "#00FF00", '#FF59E3', '#0000FF', '#FFA500', '#FFFF00', '#FF00FF', '#00FFFF', '#800080', '#008000', '#800000', '#808080', '#008080'],
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
+        const nomInsLabels = Object.keys(nomInsCounts);
+        const nomInsData = nomInsLabels.map((label) => nomInsCounts[label]);
+
+        if (chartnomIn) {
+            const existingLabels = chartnomIn.data.labels;
+            const existingData = chartnomIn.data.datasets[0].data;
+
+            if (existingLabels.length >= 5) {
+                existingLabels.shift();
+                existingData.shift();
+            }
+
+            nomInsLabels.forEach((label, index) => {
+                if (existingLabels.length < 5) {
+                    if (!existingLabels.includes(label)) {
+                        chartnomIn.data.labels.push(label);
+                        chartnomIn.data.datasets[0].data.push(nomInsCounts[label]);
                     }
                 }
-            }
-        });
-    
+            });
+            chartnomIn.update();
+        } else {
+            const ctxnomIns = document.getElementById('chartNomInst').getContext('2d');
+            chartnomIn = new Chart(ctxnomIns, {
+                type: 'bar',
+                data: {
+                    labels: nomInsLabels,
+                    datasets: [{
+                        label: 'Cantidad de nombres de institucion',
+                        data: nomInsData,
+                        backgroundColor: ["#FF0000", "#00FF00", '#FF59E3', '#0000FF', '#FFA500', '#FFFF00', '#FF00FF', '#00FFFF', '#800080', '#008000', '#800000', '#808080', '#008080'],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    }
 </script>
 
 
-<!-- chart para los municipios -->
 
-<!-- <script>
-    const Municipios = {!! json_encode($completas->pluck('municipio_medico')->all()) !!};
-    const MunicipiosCount = {};
-
-    Municipios.forEach((Municipio) => {
-    if (MunicipiosCount[Municipio]) {
-        MunicipiosCount[Municipio]++;
-    } else {
-        MunicipiosCount[Municipio] = 1;
-    }
-});
-
-
-    const MunicipioLabels = Object.keys(MunicipiosCount);
-    const MunicipioData = MunicipioLabels.map((label) => MunicipiosCount[label]);
-
-    const ctxMun = document.getElementById('chartMunicipio').getContext('2d');
-        const chartMun = new Chart(ctxMun, {
-            type: 'bar',
-            data: {
-                labels: MunicipioLabels,
-                datasets: [{
-                    label: 'Cantidad de municipios medicos',
-                    data: MunicipioData,
-                    backgroundColor: ["#FF0000", "#00FF00", '#FF59E3', '#0000FF', '#FFA500', '#FFFF00', '#FF00FF', '#00FFFF', '#800080', '#008000', '#800000', '#808080', '#008080'],
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    
-</script> -->
+<!-- Script y chart para estado medico -->
 
 <script>
     let chartMedic; // Variable para almacenar la instancia del gráfico
@@ -226,7 +197,6 @@
         const filteredData = {!! json_encode($completas->pluck('estado_medico')->all()) !!}.filter(item => item === selectedOption);
 
         const EstMedicCount = {};
-
         filteredData.forEach((EstMedics) => {
             EstMedicCount[EstMedics] = (EstMedicCount[EstMedics] || 0) + 1;
         });
@@ -265,7 +235,6 @@
                     datasets: [{
                         label: 'Cantidad de municipios médicos',
                         data: EstMedicData,
-                        backgroundColor: ["#FF0000", "#00FF00", '#FF59E3', '#0000FF', '#FFA500', '#FFFF00', '#FF00FF', '#00FFFF', '#800080', '#008000', '#800000', '#808080', '#008080'],
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1
                     }]
@@ -281,8 +250,8 @@
             });
         }
     }
-
 </script>
+
 
 
 <script>
