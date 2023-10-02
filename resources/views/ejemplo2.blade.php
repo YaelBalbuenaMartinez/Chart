@@ -236,23 +236,25 @@
 
         if (chartMedic) {
             // Si ya existe un gráfico, actualizamos sus datos
-    const existingLabels = chartMedic.data.labels;
-    const existingData = chartMedic.data.datasets[0].data;
+            const existingLabels = chartMedic.data.labels;
+            const existingData = chartMedic.data.datasets[0].data;
 
-    EstMedicLabels.forEach((label, index) => {
-        if (existingLabels.length < 10) {
-            if (!existingLabels.includes(label)) {
-                chartMedic.data.labels.push(label);
-                chartMedic.data.datasets[0].data.push(EstMedicCount[label]);
+            if (existingLabels.length >= 10) {
+                // Si ya hay 10 etiquetas, eliminar la primera (el dato más antiguo)
+                existingLabels.shift();
+                existingData.shift();
             }
-        } else {
-            return;  // Alcanzamos el límite de 10 etiquetas, no se pueden agregar más.
-        }
-    });
 
-    chartMedic.update();
+            EstMedicLabels.forEach((label, index) => {
+                if (existingLabels.length < 10) {
+                    if (!existingLabels.includes(label)) {
+                        chartMedic.data.labels.push(label);
+                        chartMedic.data.datasets[0].data.push(EstMedicCount[label]);
+                    }
+                }
+            });
 
-    chartMedic.update();
+            chartMedic.update();
         } else {
             // Si no existe un gráfico, creamos uno nuevo
             const ctxMedic = document.getElementById('chartEstMedic').getContext('2d');
