@@ -53,31 +53,20 @@
     </div>
 
     <div class="col-lg-6 text-center">
-    <label for="opciones">Seleciona cuales quieras graficar.</label>
-        <select id="opciones4" name="opciones">
-            <?php $vistos = []; ?>
-            @foreach($completas as $completa)
-                @if (!in_array($completa->estado_medico, $vistos))
-                    <option value="opcion1">{{ $completa->estado_medico }}</option>
+    <label for="opciones">Selecciona cuáles quieras graficar.</label>
+    <select id="opciones4" name="opciones">
+        <?php $vistos = []; ?>
+        @foreach($completas as $completa)
+            @if (!in_array($completa->estado_medico, $vistos))
+                <option value="{{ $completa->estado_medico }}">{{ $completa->estado_medico }}</option>
                 <?php $vistos[] = $completa->estado_medico; ?>
-                @endif
-            @endforeach
-        </select>
+            @endif
+        @endforeach
+    </select>
 
-        <select id="opciones4" name="opciones">
-            <?php $vistos = []; ?>
-            @foreach($completas as $completa)
-                @if (!in_array($completa->estado_medico, $vistos))
-                    <option value="opcion1">{{ $completa->estado_medico }}</option>
-                <?php $vistos[] = $completa->estado_medico; ?>
-                @endif
-            @endforeach
-        </select>
-
-        <button class="btn btn-primary">Graficar</button>
-      <canvas id="chartEstMedic" width="400" height="400"></canvas>
+        <button class="btn btn-primary" onclick="actualizarGrafico()">Graficar</button>
+        <canvas id="chartEstMedic" width="400" height="400"></canvas>
     </div>
-
     <div class="col-lg-12 text-center">
         <h5>Coloca la edad que deseas graficar</h5>
         <input type="number" min="0" max="80">
@@ -228,44 +217,58 @@
 </script> -->
 
 <script>
-    const EstMedic = {!! json_encode($completas->pluck('estado_medico')->all()) !!};
-    const EstMedicCount = {};
+    let chartMedic; // Variable para almacenar la instancia del gráfico
 
-    EstMedic.forEach((EstMedics) => {
-    if (EstMedicCount[EstMedics]) {
-        EstMedicCount[EstMedics]++;
-    } else {
-        EstMedicCount[EstMedics] = 1;
-    }
-});
+    function actualizarGrafico() {
+        const selectedOption = document.getElementById('opciones4').value;
 
+        // Filtrar los datos según la opción seleccionada
+        const filteredData = {!! json_encode($completas->pluck('estado_medico')->all()) !!}.filter(item => item === selectedOption);
 
-    const EstMedicLabels = Object.keys(EstMedicCount);
-    const EstMedicData = EstMedicLabels.map((label) => EstMedicCount[label]);
+        const EstMedicCount = {};
 
-    const ctxMedic = document.getElementById('chartEstMedic').getContext('2d');
-        const chartMedic = new Chart(ctxMedic, {
-            type: 'line',
-            data: {
-                labels: EstMedicLabels,
-                datasets: [{
-                    label: 'Cantidad de municipios medicos',
-                    data: EstMedicData,
-                    backgroundColor: ["#FF0000", "#00FF00", '#FF59E3', '#0000FF', '#FFA500', '#FFFF00', '#FF00FF', '#00FFFF', '#800080', '#008000', '#800000', '#808080', '#008080'],
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+        filteredData.forEach((EstMedics) => {
+            if (EstMedicCount[EstMedics]) {
+                EstMedicCount[EstMedics]++;
+            } else {
+                EstMedicCount[EstMedics] = 1;
             }
         });
-    
+
+        const EstMedicLabels = Object.keys(EstMedicCount);
+        const EstMedicData = EstMedicLabels.map((label) => EstMedicCount[label]);
+
+        if (chartMedic) {
+            // Si ya existe un gráfico, actualizamos sus datos
+            chartMedic.data.labels = EstMedicLabels;
+            chartMedic.data.datasets[0].data = EstMedicData;
+            chartMedic.update();
+        } else {
+            // Si no existe un gráfico, creamos uno nuevo
+            const ctxMedic = document.getElementById('chartEstMedic').getContext('2d');
+            chartMedic = new Chart(ctxMedic, {
+                type: 'bar',
+                data: {
+                    labels: EstMedicLabels,
+                    datasets: [{
+                        label: 'Cantidad de municipios médicos',
+                        data: EstMedicData,
+                        backgroundColor: ["#FF0000", "#00FF00", '#FF59E3', '#0000FF', '#FFA500', '#FFFF00', '#FF00FF', '#00FFFF', '#800080', '#008000', '#800000', '#808080', '#008080'],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    }
 </script>
 
 <script>
