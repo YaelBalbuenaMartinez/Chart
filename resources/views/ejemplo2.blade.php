@@ -228,21 +228,28 @@
         const EstMedicCount = {};
 
         filteredData.forEach((EstMedics) => {
-            if (EstMedicCount[EstMedics]) {
-                EstMedicCount[EstMedics]++;
-            } else {
-                EstMedicCount[EstMedics] = 1;
-            }
+            EstMedicCount[EstMedics] = (EstMedicCount[EstMedics] || 0) + 1;
         });
 
         const EstMedicLabels = Object.keys(EstMedicCount);
         const EstMedicData = EstMedicLabels.map((label) => EstMedicCount[label]);
 
         if (chartMedic) {
-            // Si ya existe un gráfico, actualizamos sus datos
-            chartMedic.data.labels = EstMedicLabels;
-            chartMedic.data.datasets[0].data = EstMedicData;
-            chartMedic.update();
+            const existingLabels = chartMedic.data.labels;
+            const existingData = chartMedic.data.datasets[0].data;
+
+    // Agregar nuevas etiquetas y datos
+            EstMedicLabels.forEach((label, index) => {
+                if (!existingLabels.includes(label)) {
+                    chartMedic.data.labels.push(label);
+                    chartMedic.data.datasets[0].data.push(EstMedicCount[label]);
+                } else {
+                    const existingLabelIndex = existingLabels.indexOf(label);
+                    chartMedic.data.datasets[0].data[existingLabelIndex] += EstMedicCount[label];
+                }
+            });
+
+        chartMedic.update();
         } else {
             // Si no existe un gráfico, creamos uno nuevo
             const ctxMedic = document.getElementById('chartEstMedic').getContext('2d');
@@ -269,7 +276,9 @@
             });
         }
     }
+
 </script>
+
 
 <script>
     const Edades = {!! json_encode($completas->pluck('edad')->all()) !!};
