@@ -29,7 +29,7 @@
 
     <div class="col-lg-6 text-center">
       <hr class="line">
-      <label for="opciones"><h5>Selecciona que institución quieres graficar: </h5></label>
+      <label for="opciones">Selecciona que institución quieres graficar:</label>
       <select id="opciones1" name="opciones">
         <?php $vistos = []; ?>
         @foreach($completas as $completa)
@@ -46,7 +46,7 @@
 
     <div class="col-lg-6 text-center">
       <hr class="line">
-      <label for="opciones">Selecciona que estado medico quieres graficar: </label>
+      <label for="opciones">Selecciona el municipio quieres graficar:</label>
       <select id="opciones4" name="opciones">
         <?php $vistos = []; ?>
         @foreach($completas as $completa)
@@ -63,7 +63,7 @@
 
     <div class="col-lg-12 text-center">
       <h5>Coloca la edad que deseas graficar</h5>
-      <input id="numerico" type="number" min="0" max="80" value="{{ $completa->edad }}">
+      <input id="numerico" type="number" min="0" max="100" value="{{ $completa->edad }}">
       <button class="btn btn-primary" onclick="actualizaredad()">Graficar</button>
       <canvas id="chartEdad" width="1000" height="400"></canvas>
     </div>
@@ -256,6 +256,7 @@
 </script>
 
 
+<!-- Chart y script de Edad con sweet alert -->
 
 <script>
     let chartEdad;
@@ -265,12 +266,13 @@
 
         const filtroEdad = {!! json_encode($completas->pluck('edad')->all()) !!}.filter(item => item === selectEdad);
 
+        // Si la edad no esta registrada soltara un sweet alert
         if (filtroEdad.length === 0) {
             
             Swal.fire({
                 icon: 'error',
-                title: 'Edad no encontrada',
-                text: 'La edad seleccionada no existe en la base de datos.',
+                title: 'Edad no registrada',
+                text: 'La edad seleccionada no esta registrada en la base de datos.',
             });
             return; 
         }
