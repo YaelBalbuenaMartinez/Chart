@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.css">
   <title>Canvas con Bootstrap</title>
   <style>
 
@@ -73,6 +74,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 
 </body>
@@ -261,6 +264,16 @@
         const selectEdad = document.getElementById('numerico').value;
 
         const filtroEdad = {!! json_encode($completas->pluck('edad')->all()) !!}.filter(item => item === selectEdad);
+
+        if (filtroEdad.length === 0) {
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Edad no encontrada',
+                text: 'La edad seleccionada no existe en la base de datos.',
+            });
+            return; 
+        }
 
         const EdadesCounts = {};
 
