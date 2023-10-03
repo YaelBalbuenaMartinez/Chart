@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,66 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <title>Canvas con Bootstrap</title>
+  <style>
+
+    .line{
+        background-color: black;
+    }
+  </style>
 </head>
 <body>
 
-
-
-<div class="container">
+<div class="container mt-5">
   <div class="row">
     <div class="col-lg-6 text-center">
+        <h5>Grafica de estatus de vigencia</h5>
       <canvas id="chartEstatus" width="300" height="300"></canvas>
     </div>
 
     <div class="col-lg-6 text-center ">
+        <h5>Grafica de genero</h5>
       <canvas id="chartGenero" width="300" height="300"></canvas>
     </div>
 
     <div class="col-lg-6 text-center">
-
-    <label for="opciones">Selecciona cuales quieras graficar:</label>
-
-    <select id="opciones1" name="opciones">
+      <hr class="line">
+      <label for="opciones"><h5>Selecciona que institución quieres graficar: </h5></label>
+      <select id="opciones1" name="opciones">
         <?php $vistos = []; ?>
         @foreach($completas as $completa)
-            @if (!in_array($completa->institucion_abrev, $vistos))
-                <option value="{{ $completa->institucion_abrev }}">{{ $completa->institucion_abrev }}</option>
+          @if (!in_array($completa->institucion_abrev, $vistos))
+            <option value="{{ $completa->institucion_abrev }}">{{ $completa->institucion_abrev }}</option>
             <?php $vistos[] = $completa->institucion_abrev; ?>
-            @endif
+          @endif
         @endforeach 
-    </select>
-
-    <button class="btn btn-primary" onclick="agregar()">graficar</button>
-
+      </select>
+      <button class="btn btn-primary" onclick="agregar()">graficar</button>
       <canvas id="chartNomInst" width="400" height="400"></canvas>
+      <hr class="line">
     </div>
 
     <div class="col-lg-6 text-center">
-        <hr>
-    <label for="opciones">Selecciona cuáles quieras graficar.</label>
-    <select id="opciones4" name="opciones">
+      <hr class="line">
+      <label for="opciones">Selecciona que estado medico quieres graficar: </label>
+      <select id="opciones4" name="opciones">
         <?php $vistos = []; ?>
         @foreach($completas as $completa)
-            @if (!in_array($completa->estado_medico, $vistos))
-                <option value="{{ $completa->estado_medico }}">{{ $completa->estado_medico }}</option>
-                <?php $vistos[] = $completa->estado_medico; ?>
-            @endif
+          @if (!in_array($completa->estado_medico, $vistos))
+            <option value="{{ $completa->estado_medico }}">{{ $completa->estado_medico }}</option>
+            <?php $vistos[] = $completa->estado_medico; ?>
+          @endif
         @endforeach
-    </select>
-
-        <button class="btn btn-primary" onclick="actualizarGrafico()">Graficar</button>
-        <canvas id="chartEstMedic" width="400" height="400"></canvas>
-        <hr>
+      </select>
+      <button class="btn btn-primary" onclick="actualizarGrafico()">Graficar</button>
+      <canvas id="chartEstMedic" width="400" height="400"></canvas>
+      <hr class="line">
     </div>
+
     <div class="col-lg-12 text-center">
-        <h5>Coloca la edad que deseas graficar</h5>
-        <input type="number" min="0" max="80">
-        <input type="number" min="0" max="80">
-        <button class="btn btn-primary">Graficar</button>
+      <h5>Coloca la edad que deseas graficar</h5>
+      <input id="numerico" type="number" min="0" max="80" value="{{ $completa->edad }}">
+      <button class="btn btn-primary" onclick="actualizaredad()">Graficar</button>
       <canvas id="chartEdad" width="1000" height="400"></canvas>
     </div>
-
-    
   </div>
 </div>
 
@@ -75,6 +73,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
 </body>
 </html>
 
@@ -142,7 +142,7 @@
             const existingLabels = chartnomIn.data.labels;
             const existingData = chartnomIn.data.datasets[0].data;
 
-            if (existingLabels.length >= 5) {
+            if (existingLabels.length >=5) {
                 existingLabels.shift();
                 existingData.shift();
             }
@@ -255,43 +255,65 @@
 
 
 <script>
-    const Edades = {!! json_encode($completas->pluck('edad')->all()) !!};
-    const EdadesCounts = {};
+    let chartEdad;
 
-    Edades.forEach((Edad) => {
-    if (EdadesCounts[Edad]) {
-        EdadesCounts[Edad]++;
-    } else {
-        EdadesCounts[Edad] = 1;
-    }
-});
+    function actualizaredad() {
+        const selectEdad = document.getElementById('numerico').value;
 
+        const filtroEdad = {!! json_encode($completas->pluck('edad')->all()) !!}.filter(item => item === selectEdad);
 
-    const EdadesLabels = Object.keys(EdadesCounts);
-    const EdadesData = EdadesLabels.map((label) => EdadesCounts[label]);
+        const EdadesCounts = {};
 
-    const ctxEdad = document.getElementById('chartEdad').getContext('2d');
-        const chartEdad = new Chart(ctxEdad, {
-            type: 'line',
-            data: {
-                labels: EdadesLabels,
-                datasets: [{
-                    label: 'Cantidad de edades',
-                    data: EdadesData,
-                    backgroundColor: ["#FF0000"],
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
+        filtroEdad.forEach((edades) => {
+            EdadesCounts[edades] = (EdadesCounts[edades] || 0) + 1;
+        });
+        
+        const EdadesLabels = Object.keys(EdadesCounts);
+        const EdadesData = EdadesLabels.map((label) => EdadesCounts[label]);
+
+        if (chartEdad) {
+            const existingLabels = chartEdad.data.labels;
+            const existingData = chartEdad.data.datasets[0].data;
+
+            if (existingLabels.length >= 10) {
+                existingLabels.shift();
+                existingData.shift();
+            }
+
+            EdadesLabels.forEach((label, index) => {
+                if (existingLabels.length < 10) {
+                    if (!existingLabels.includes(label)) {
+                        chartEdad.data.labels.push(label);
+                        chartEdad.data.datasets[0].data.push(EdadesCounts[label]);
                     }
                 }
-            }
-        });
+            });
+
+            chartEdad.update();
+        } else {
+            const ctxEdad = document.getElementById('chartEdad').getContext('2d');
+            chartEdad = new Chart(ctxEdad, {
+                type: 'bar',
+                data: {
+                    labels: EdadesLabels,
+                    datasets: [{
+                        label: 'Cantidad de edades',
+                        data: EdadesData,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    }
 </script>
 
 <script>
