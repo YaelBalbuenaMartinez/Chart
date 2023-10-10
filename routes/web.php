@@ -22,3 +22,4 @@ Route::get('/pruebas', [App\Http\Controllers\ControllerPruebas::class, 'index'])
 Route::get('/completa', [App\Http\Controllers\ControllerCompleta::class, 'index']); 
 Route::get('/reportes', [App\Http\Controllers\ChartController::class, 'appointments']); 
 Route::get('/ruta_de_ajax_para_filtrar_por_edad', 'AppointmentsController@obtenerDatosPorEdad')->name('ruta.ajax.edad');
+Route::get('/bancos', [App\Http\Controllers\BancosController::class, 'index']);
