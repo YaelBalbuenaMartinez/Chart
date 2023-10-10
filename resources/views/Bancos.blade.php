@@ -61,7 +61,7 @@ function searchClave(){
         html += `<h1>${nombreCorto}</h1>`;
         $("#NomCort").html(html);
     } else {
-        $("#NomCort").html('<h2>No se encontró un nombre corto para la clave ingresada.</h2>');
+        $("#NomCort").html('<h2>No hay un registró en la base de datos.</h2>');
     }
 }
 </script>
