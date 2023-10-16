@@ -17,6 +17,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/calendario', function(){
+    return view('Calendario');
+});
 
 Route::get('/pruebas', [App\Http\Controllers\ControllerPruebas::class, 'index']); 
 Route::get('/completa', [App\Http\Controllers\ControllerCompleta::class, 'index']); 
