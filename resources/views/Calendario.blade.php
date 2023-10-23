@@ -12,9 +12,6 @@
             color: black;
         }
 
-        .fc-today {
-            background-color: #ffcccc; /* Color para resaltar el día actual */
-        }
     </style>
 </head>
 
@@ -31,12 +28,13 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/es.min.js"></script> <!-- Configuración en español -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
         <script>
             $(document).ready(function() {
                 $('#calendar').fullCalendar({
                     // Configuración del calendario
                     header: {
-                        left: 'prev,next today',
+                        left: 'prevYear,prev,next,nextYear, today',
                         center: 'title',
                         right: 'month,agendaWeek,agendaDay'
                     },
